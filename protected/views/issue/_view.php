@@ -17,23 +17,19 @@
 	<?php echo CHtml::encode($data->description); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('project_id')); ?>:</b>
-	<?php echo CHtml::encode($data->project_id); ?>
-	<br />
-
 	<b><?php echo CHtml::encode($data->getAttributeLabel('type_id')); ?>:</b>
-	<?php echo CHtml::encode($data->type_id); ?>
+	<?php echo CHtml::encode($data->getTypeText()); ?>
 	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('status_id')); ?>:</b>
-	<?php echo CHtml::encode($data->status_id); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('owner_id')); ?>:</b>
-	<?php echo CHtml::encode($data->owner_id); ?>
+	<?php echo CHtml::encode($data->getStatusText()); ?>
 	<br />
 
 	<?php /*
+	<b><?php echo CHtml::encode($data->getAttributeLabel('owner_id')); ?>:</b>
+	<?php echo CHtml::encode($data->owner_id); ?>
+	<br />
+	
 	<b><?php echo CHtml::encode($data->getAttributeLabel('requester_id')); ?>:</b>
 	<?php echo CHtml::encode($data->requester_id); ?>
 	<br />
