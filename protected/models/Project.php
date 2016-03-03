@@ -117,5 +117,69 @@ class Project extends TrackStarActiveRecord //CActiveRecord
 		$usersArray = CHtml::listData($this->users, 'id', 'username');
 		
 		return $usersArray;
-	}	
+	}
+
+	/**
+	 * takes a role name and a user ID and creates the association between role, user, and project
+	 * @param unknown $userId
+	 * @param unknown $role
+	 */
+	public function assignUser($userId, $role)
+	{
+		$command = Yii::app()->db->createCommand();
+		$command->insert('tbl_project_user_assignment', array(
+			'role'=>$role,
+			'user_id'=>$userId,
+			'project_id'=>$this->id,
+		));
+	}
+
+	/**
+	 * removes a user from a project, and in doing so, remove the association between a user and the project
+	 * @param unknown $userId
+	 */
+	public function removeUser($userId)
+	{
+		$command = Yii::app()->db->createCommand();
+		$command->delete(
+			'tbl_project_user_assignment',
+			'user_id=:userId AND project_id=:projectId',
+			array(':userId'=>$userId,':projectId'=>$this->id));
+	}
+
+	/**
+	 * determines whether or not a given user is associated with a role within the project
+	 * @param unknown $role
+	 * @return boolean
+	 */
+	public function allowCurrentUser($role)
+	{
+		$sql = "SELECT * FROM tbl_project_user_assignment WHERE project_id=:projectId AND user_id=:userId AND role=:role";
+		$command = Yii::app()->db->createCommand($sql);
+		$command->bindValue(":projectId", $this->id, PDO::PARAM_INT);
+		$command->bindValue(":userId", Yii::app()->user->getId(), PDO::PARAM_INT);
+		$command->bindValue(":role", $role, PDO::PARAM_STR);
+		
+		return $command->execute()==1;
+	}
+
+	/**
+	 * Returns an array of available roles in which a user can be placed when being added to a project
+	 */
+	public static function getUserRoleOptions()
+	{
+		return CHtml::listData(Yii::app()->authManager->getRoles(), 'name', 'name');
+	}
+
+	/**
+	 * Determines whether or not a user is already part of a project
+	 */
+	public function isUserInProject($user)
+	{
+		$sql = "SELECT user_id FROM tbl_project_user_assignment WHERE project_id=:projectId AND user_id=:userId";
+		$command = Yii::app()->db->createCommand($sql);
+		$command->bindValue(":projectId", $this->id, PDO::PARAM_INT);
+		$command->bindValue(":userId", $user->id, PDO::PARAM_INT);
+		return $command->execute()==1;
+	}
 }
